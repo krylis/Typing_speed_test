@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 import random
 
 words = ["fruit", "building", "alphabet", "kangaroo", "apple", "garage", "firefighter", "chicken", "skyscraper",
@@ -8,7 +9,6 @@ words = ["fruit", "building", "alphabet", "kangaroo", "apple", "garage", "firefi
          "green", "miraculous", "powder", "valley", "numerous", "unanimous"]
 words_typed = []
 timer = 60
-words_typed = 0
 
 
 def get_random_word():
@@ -28,15 +28,20 @@ def countdown(second=0):
         root.after(1000, countdown, 1)
     else:
         restart_btn['state'] = "normal"
+        word_entry.delete(0, END)
         word_entry['state'] = "disable"
+        show_results()
 
 
-def restart_timer():
+def restart():
     global timer
+    global words_typed
     timer = 60
     timer_text.set(get_timer_text())
     restart_btn['state'] = "disable"
     start_timer_btn['state'] = "normal"
+    words_typed = []
+    words_typed_text.set(get_words_typed_text())
 
 
 def get_timer_text():
@@ -44,16 +49,27 @@ def get_timer_text():
 
 
 def get_words_typed_text():
-    return f"{words_typed} Words Typed"
+    return f"{len(words_typed)} Words Typed"
 
 
 def compare_words(event):
     global words_typed
     if users_word.get() == random_word.get():
-        words_typed += 1
+        words_typed.append(users_word.get())
         words_typed_text.set(get_words_typed_text())
     random_word.set(get_random_word())
     word_entry.delete(0, END)
+
+
+def show_results():
+    characters_typed = 0
+    for word in words_typed:
+        for c in word:
+            characters_typed += 1
+    typing_results = f"You typed {len(words_typed)} words in 60 seconds. \n" \
+                     f"You averaged {characters_typed} characters typed per minute. \n" \
+                     f"Great Work!"
+    messagebox.showinfo(title="Results", message=typing_results)
 
 
 root = Tk()
@@ -85,7 +101,7 @@ words_typed_text.set(get_words_typed_text())
 words_typed_label = ttk.Label(root, textvariable=words_typed_text)
 words_typed_label.pack(pady=5)
 
-restart_btn = ttk.Button(root, text="Try Again", state="disable", command=restart_timer)
+restart_btn = ttk.Button(root, text="Try Again", state="disable", command=restart)
 restart_btn.pack()
 
 root.bind('<Return>', compare_words)
