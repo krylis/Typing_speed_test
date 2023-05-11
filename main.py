@@ -6,6 +6,7 @@ words = ["fruit", "building", "alphabet", "kangaroo", "apple", "garage", "firefi
          "monster", "game", "fear", "computer", "window", "mattress", "hunger", "berserk", "sunset", "cloud",
          "earth", "angel", "devil", "junior", "africa", "continent", "humongous", "appetite", "vicious", "killer",
          "green", "miraculous", "powder", "valley", "numerous", "unanimous"]
+words_typed = []
 timer = 60
 words_typed = 0
 
@@ -14,6 +15,28 @@ def get_random_word():
     num_of_words = len(words)
     random_index = random.randint(0, num_of_words-1)
     return words[random_index]
+
+
+def countdown(second=0):
+    word_entry['state'] = "normal"
+    word_entry.focus_set()
+    start_timer_btn['state'] = "disable"
+    global timer
+    timer = timer - second
+    timer_text.set(get_timer_text())
+    if timer > 0:
+        root.after(1000, countdown, 1)
+    else:
+        restart_btn['state'] = "normal"
+        word_entry['state'] = "disable"
+
+
+def restart_timer():
+    global timer
+    timer = 60
+    timer_text.set(get_timer_text())
+    restart_btn['state'] = "disable"
+    start_timer_btn['state'] = "normal"
 
 
 def get_timer_text():
@@ -33,12 +56,9 @@ def compare_words(event):
     word_entry.delete(0, END)
 
 
-
 root = Tk()
 root.geometry("300x230")
 root.title("Typing Speed Test")
-
-root.bind('<Return>', compare_words)
 
 random_word = StringVar()
 random_word.set(get_random_word())
@@ -46,10 +66,13 @@ word_lbl = ttk.Label(root, textvariable=random_word, font=('Helvatical bold', 20
 word_lbl.pack(pady=5)
 
 users_word = StringVar()
-word_entry = ttk.Entry(root, textvariable=users_word)
+word_entry = ttk.Entry(root, textvariable=users_word, state="disable")
 word_entry.pack(pady=5)
 
-instructions_label = ttk.Label(root, text="Start typing to begin \n Hit Enter after each word", justify="center")
+start_timer_btn = ttk.Button(root, text="Start Timer", command=countdown)
+start_timer_btn.pack(pady=5)
+
+instructions_label = ttk.Label(root, text="Hit Enter after each word")
 instructions_label.pack(pady=5)
 
 timer_text = StringVar()
@@ -62,7 +85,9 @@ words_typed_text.set(get_words_typed_text())
 words_typed_label = ttk.Label(root, textvariable=words_typed_text)
 words_typed_label.pack(pady=5)
 
-restart_btn = ttk.Button(root, text="Try Again", state="disable")
+restart_btn = ttk.Button(root, text="Try Again", state="disable", command=restart_timer)
 restart_btn.pack()
+
+root.bind('<Return>', compare_words)
 
 root.mainloop()
