@@ -24,9 +24,21 @@ def get_words_typed_text():
     return f"{words_typed} Words Typed"
 
 
+def compare_words(event):
+    global words_typed
+    if users_word.get() == random_word.get():
+        words_typed += 1
+        words_typed_text.set(get_words_typed_text())
+    random_word.set(get_random_word())
+    word_entry.delete(0, END)
+
+
+
 root = Tk()
 root.geometry("300x230")
 root.title("Typing Speed Test")
+
+root.bind('<Return>', compare_words)
 
 random_word = StringVar()
 random_word.set(get_random_word())
